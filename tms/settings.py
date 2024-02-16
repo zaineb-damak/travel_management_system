@@ -31,6 +31,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'package',
+    'user_management',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -38,12 +40,17 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'user_management',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
-    'celery', 
+    'celery',   
     'django_celery_results',
+    'django_celery_beat',
+
 ]
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10
+}
 
 AUTH_USER_MODEL = 'user_management.User'
 
@@ -135,6 +142,7 @@ import os
 BROKER_URL = os.environ.get('RABBITMQ_URL', 'amqp://zaineb:Zaineb.damak30@localhost:5672/vzaineb')
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_CACHE_BACKEND = 'django-cache'
+CELERY_IMPORTS = ('package.tasks',)
 
 from datetime import timedelta
 ...
