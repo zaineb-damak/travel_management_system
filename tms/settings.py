@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'booking',
     'package',
     'user_management',
     'django.contrib.admin',
@@ -47,10 +48,6 @@ INSTALLED_APPS = [
     'django_celery_beat',
 
 ]
-REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 10
-}
 
 AUTH_USER_MODEL = 'user_management.User'
 
