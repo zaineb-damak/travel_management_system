@@ -1,5 +1,5 @@
-from package.models import Package, Day, Liked
-from package.serializers import PackageSerializer,DaySerializer, LikedSerializer
+from package.models import Package, Day, Liked, Hotel
+from package.serializers import PackageSerializer,DaySerializer, LikedSerializer, HotelSerializer
 from rest_framework import generics
 from rest_framework import status
 from rest_framework.response import Response
@@ -37,6 +37,16 @@ class DayDetail(generics.RetrieveAPIView):
     serializer_class = DaySerializer
     page_size = 10
 
+class HotelList(generics.ListAPIView):
+    queryset = Hotel.objects.all()
+    serializer_class = HotelSerializer
+    page_size = 10
+
+class HotelDetail(generics.RetrieveAPIView):
+    queryset = Hotel.objects.all()
+    serializer_class = HotelSerializer
+    page_size = 10
+
 class LikedList(generics.ListAPIView):
     serializer_class = LikedSerializer
     page_size = 10
@@ -56,10 +66,8 @@ class LikedCreate(generics.CreateAPIView):
         except Package.DoesNotExist:
             return Response({"error": "Package does not exist"}, status=status.HTTP_404_NOT_FOUND)
         
-        # Set the package ID in the request data
         request.data['package'] = package.id
         
-        # Set the user ID in the request data
         request.data['user'] = request.user.id
         
         return super().create(request, *args, **kwargs)

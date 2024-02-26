@@ -9,7 +9,7 @@ class Booking(models.Model):
         ('CANCELLED', 'Cancelled'),
     ) 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    trip_package = models.ForeignKey(Package, on_delete=models.CASCADE)
+    package = models.ForeignKey(Package, on_delete=models.CASCADE)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
     booking_date = models.DateField()
     
