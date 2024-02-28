@@ -65,8 +65,9 @@ class BookingCreate(generics.CreateAPIView):
         user_id = self.request.user.id
         booking_date = datetime.now().date()
         price = package.price
+        destination = package.destination
 
-        create_pdf_invoice_task.delay(booking_id, booking_date, package_id, user_id, price)
+        create_pdf_invoice_task.delay(booking_id, booking_date, package_id, user_id, price, destination)
 
         return super().perform_create(serializer)
 
