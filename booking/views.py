@@ -5,6 +5,7 @@ from rest_framework import generics
 from rest_framework import status
 from rest_framework.response import Response
 from datetime import datetime
+from booking.tasks import create_pdf_invoice_task
 
 class BookingList(generics.ListAPIView):
     serializer_class = BookingSerializer
@@ -36,9 +37,31 @@ class BookingCreate(generics.CreateAPIView):
         request.data['booking_date'] = datetime.now().date()
         request.data['package'] = package.id
         request.data['user'] = request.user.id
-        
+          
         return super().create(request, *args, **kwargs)
+    
+    def perform_create(self, serializer):
+        try:
+            package = Package.objects.get(pk=self.kwargs.get('pk'))
+        except Booking.DoesNotExist:
+            return Response({"error": "Booking does not exist"}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer.save(
+            status='PENDING',
+            booking_date=datetime.now().date(),
+            package=package,
+            user=self.request.user
+        )
 
+        # Call method to create PDF invoice
+        booking_id = serializer.instance.id
+        package_id = package.id
+        user_id = self.request.user.id
+        booking_date = datetime.now().date()
+
+        create_pdf_invoice_task.delay(booking_id, booking_date, package_id, user_id)
+
+        return super().perform_create(serializer)
 
 class BookingDestroy(generics.DestroyAPIView):
     queryset = Booking.objects.all()
