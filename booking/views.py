@@ -27,15 +27,21 @@ class BookingCreate(generics.CreateAPIView):
     serializer_class = BookingSerializer
 
     def create(self, request, *args, **kwargs):
-        # Retrieve the package object
         try:
             package = Package.objects.get(pk=self.kwargs.get('pk'))
         except Booking.DoesNotExist:
             return Response({"error": "Booking does not exist"}, status=status.HTTP_404_NOT_FOUND)
+        package_data = {
+            "id": package.id,  
+            "destination": package.destination,
+            "duration": package.duration,
+            "price": package.price  
+        
+    }
         
         request.data['status'] = 'PENDING'
         request.data['booking_date'] = datetime.now().date()
-        request.data['package'] = package.id
+        request.data['package'] = package_data
         request.data['user'] = request.user.id
           
         return super().create(request, *args, **kwargs)
@@ -58,8 +64,9 @@ class BookingCreate(generics.CreateAPIView):
         package_id = package.id
         user_id = self.request.user.id
         booking_date = datetime.now().date()
+        price = package.price
 
-        create_pdf_invoice_task.delay(booking_id, booking_date, package_id, user_id)
+        create_pdf_invoice_task.delay(booking_id, booking_date, package_id, user_id, price)
 
         return super().perform_create(serializer)
 
