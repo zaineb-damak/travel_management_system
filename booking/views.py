@@ -31,14 +31,14 @@ class BookingCreate(generics.CreateAPIView):
             package = Package.objects.get(pk=self.kwargs.get('pk'))
         except Booking.DoesNotExist:
             return Response({"error": "Booking does not exist"}, status=status.HTTP_404_NOT_FOUND)
+       
+       
         package_data = {
             "id": package.id,  
             "destination": package.destination,
             "duration": package.duration,
             "price": package.price  
-        
-    }
-        
+         }
         request.data['status'] = 'PENDING'
         request.data['booking_date'] = datetime.now().date()
         request.data['package'] = package_data
@@ -59,7 +59,7 @@ class BookingCreate(generics.CreateAPIView):
             user=self.request.user
         )
 
-        # Call method to create PDF invoice
+        
         booking_id = serializer.instance.id
         package_id = package.id
         user_id = self.request.user.id
@@ -75,5 +75,12 @@ class BookingDestroy(generics.DestroyAPIView):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
 
+class BookingCancel(generics.UpdateAPIView):
+    queryset = Booking.objects.all()
+    serializer_class = BookingSerializer
+
+    def perform_update(self, serializer):
+        serializer.instance.status = 'CANCELLED'
+        serializer.instance.save()
 
 
