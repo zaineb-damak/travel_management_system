@@ -5,7 +5,7 @@ import hashlib
 class Payment(models.Model):
 
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE)
-    credit_card = models.IntegerField(max_length=16)
+    credit_card = models.IntegerField()
     pin = models.CharField(max_length=128) 
     payment_date = models.DateField()
     amount = models.FloatField()

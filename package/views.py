@@ -3,6 +3,8 @@ from package.serializers import PackageSerializer,DaySerializer, LikedSerializer
 from rest_framework import generics
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 class PackageList(generics.ListAPIView):
     serializer_class = PackageSerializer
@@ -58,6 +60,8 @@ class LikedList(generics.ListAPIView):
 
 class LikedCreate(generics.CreateAPIView):
     serializer_class = LikedSerializer
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
         # Retrieve the package object

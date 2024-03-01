@@ -6,6 +6,9 @@ from rest_framework import status
 from rest_framework.response import Response
 from datetime import datetime
 from booking.tasks import create_pdf_invoice_task
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
+
 
 class BookingList(generics.ListAPIView):
     serializer_class = BookingSerializer
@@ -25,6 +28,9 @@ class BookingDetail(generics.RetrieveAPIView):
 
 class BookingCreate(generics.CreateAPIView):
     serializer_class = BookingSerializer
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
 
     def create(self, request, *args, **kwargs):
         try:
