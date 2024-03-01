@@ -4,8 +4,6 @@ from tms import settings
 
 @shared_task
 def send_email(user_email,user_name, booking_id, package_id, package_name, price):
-    print(user_email)
-    print(user_name)
     mail_subject = 'payment successful'
     message = f''' Dear {user_name},
 

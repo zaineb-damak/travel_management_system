@@ -8,27 +8,36 @@ from datetime import datetime
 from booking.tasks import create_pdf_invoice_task
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from .permissions import IsBookingOwner
 
 
 class BookingList(generics.ListAPIView):
     serializer_class = BookingSerializer
     page_size = 10
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        queryset = Booking.objects.all()
+        queryset = Booking.objects.all().filter(user=self.request.user)
         title = self.request.query_params.get('package')
         if title is not None:
             queryset = queryset.filter(trip_package=title)
         return queryset
 
 class BookingDetail(generics.RetrieveAPIView):
-    queryset = Booking.objects.all()
     serializer_class = BookingSerializer
     page_size = 10
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = Booking.objects.all().filter(user=self.request.user)
+        return queryset
 
 class BookingCreate(generics.CreateAPIView):
     serializer_class = BookingSerializer
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
 
@@ -80,11 +89,17 @@ class BookingCreate(generics.CreateAPIView):
 class BookingDestroy(generics.DestroyAPIView):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
+    
 
 class BookingCancel(generics.UpdateAPIView):
-    queryset = Booking.objects.all()
     serializer_class = BookingSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        queryset = Booking.objects.all().filter(user=self.request.user)
+        return queryset
+    
     def perform_update(self, serializer):
         serializer.instance.status = 'CANCELLED'
         serializer.instance.save()

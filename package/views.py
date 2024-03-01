@@ -3,12 +3,14 @@ from package.serializers import PackageSerializer,DaySerializer, LikedSerializer
 from rest_framework import generics
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 class PackageList(generics.ListAPIView):
     serializer_class = PackageSerializer
     page_size = 10
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
         queryset = Package.objects.all()
@@ -21,11 +23,12 @@ class PackageDetail(generics.RetrieveAPIView):
     queryset = Package.objects.all()
     serializer_class = PackageSerializer
     page_size = 10
-    
+    permission_classes = [AllowAny]
 
 class DayList(generics.ListAPIView):
     serializer_class = DaySerializer
     page_size = 10
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
         queryset = Day.objects.all()
@@ -38,31 +41,36 @@ class DayDetail(generics.RetrieveAPIView):
     queryset = Day.objects.all()
     serializer_class = DaySerializer
     page_size = 10
+    permission_classes = [AllowAny]
 
 class HotelList(generics.ListAPIView):
     queryset = Hotel.objects.all()
     serializer_class = HotelSerializer
     page_size = 10
+    permission_classes = [AllowAny]
 
 class HotelDetail(generics.RetrieveAPIView):
     queryset = Hotel.objects.all()
     serializer_class = HotelSerializer
     page_size = 10
+    permission_classes = [AllowAny]
 
 class LikedList(generics.ListAPIView):
     serializer_class = LikedSerializer
     page_size = 10
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        user = self.request.user
-        return Liked.objects.filter(user=user)
+        queryset = Liked.objects.all().filter(user=self.request.user)
+        return queryset
 
 
 class LikedCreate(generics.CreateAPIView):
     serializer_class = LikedSerializer
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
-
+    
     def create(self, request, *args, **kwargs):
         # Retrieve the package object
         try:

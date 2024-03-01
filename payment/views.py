@@ -6,21 +6,37 @@ from rest_framework import status
 from rest_framework.response import Response
 from datetime import datetime
 from payment.tasks import send_email
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
 class PaymentList(generics.ListAPIView):
-    queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
     page_size = 10
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = Payment.objects.all().filter(booking__user=self.request.user)
+        return queryset
 
 class PaymentDetail(generics.RetrieveAPIView):
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
     page_size = 10
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+
+    def get_queryset(self):
+        queryset = Payment.objects.all().filter(booking__user=self.request.user)
+        return queryset
 
 class PaymentCreate(generics.CreateAPIView):
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
         try:
