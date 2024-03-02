@@ -54,6 +54,9 @@ class PaymentCreate(generics.CreateAPIView):
 
         payment_date = datetime.now().date()
 
+        booking.status = 'CONFIRMED'
+        booking.save()
+
         payment_data = {
             "booking" : booking_id,
             "payment_date" : payment_date,

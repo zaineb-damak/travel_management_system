@@ -22,7 +22,7 @@ def send_email(user_email,user_name, booking_id, package_id, package_name, price
     send_mail(
         subject = mail_subject,
         message = message,
-        from_email = settings.EMAIL_HOST_USER,  
+        email_from = settings.EMAIL_HOST_USER,  
         recipient_list=[to_email],
         fail_silently=True   
     )
