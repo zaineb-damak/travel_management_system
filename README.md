@@ -1,13 +1,13 @@
-# authentication-project
+# travel_management_system
 
-This Django project implements three different authentication methods for accessing API endpoints: JWT, API key, and user session.
+This project is a web application for managing bookings for travel packages. Users can view available travel packages, make bookings and make fake payments.
 
 # Getting Started
 
 First clone the repository from Github and switch to the new directory:
 
-    $ git clone git@github.com/zaineb-damak/authentication-project.git
-    $ cd authentication-project
+    $ git clone git@github.com/zaineb-damak/travel_management_system.git
+    $ cd travel_management_system
     
 Activate the virtualenv for your project.
 
@@ -18,7 +18,7 @@ Install project dependencies:
 
     $ pip install -r requirements.txt
     
-Then simply apply the migrations:
+Then apply the migrations:
 
     $ python manage.py migrate
     
@@ -30,33 +30,39 @@ You can now run the development server:
 
     $ python manage.py runserver
 
-# Project Structure
+Start RabbitMQ server:
 
-Models:
+    $ rabbitmq-server
 
-User: Inherits from AbstractUser and has fields - username, email, password, first_name, last_name, and api_key.
+Start the Celery worker:
 
-Post: Fields - title, content, author (foreign key to User), and created_at.
+    $ celery -A tms worker -l info
 
-API Endpoints:
+# Project Features
 
-`/posts/`: GET request returns a list of all posts. JWT authentication.
+View available travel packages
 
-`/posts/<id>/`: GET request returns a single post by id. API key authentication.
+Make bookings for selected packages
 
-`/posts/create/`: POST request creates a new post. User session authentication.
+Make payments for bookings
 
-`/users/`: GET request returns list of all users and POST request creates a new user
+Receive email confirmation after completing a payment
 
-`/users/<id>/`: GET request returns a single user.
+Download a PDF invoice after creating a booking
 
-# Authentication
+# Technologies Used
 
-Use tools like Postman or curl to test the API endpoints with different authentication methods:
+Django
 
-Obtain a JWT token: Send a POST request to `/api/token/` with your username and password.
+Django REST Framework
 
-Obtain an API key: Access the admin site at `/admin/` and create a new API key object for your user.
+SQLite
+
+Celery
+
+RabbitMQ: Message broker used for communication between Celery workers
+
+
 
 
 
